@@ -49,7 +49,7 @@ function App() {
   }
 
   if (isLoading) {
-    content = <p>Loading...</p>;
+    content = <p>Loading.....</p>;
   }
 
   return (
