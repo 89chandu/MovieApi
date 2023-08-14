@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
 import MoviesList from './components/MoviesList';
 import AddMovie from './components/AddMovie';
 import './App.css';
@@ -17,11 +16,9 @@ function App() {
       if (!response.ok) {
         throw new Error('Something went wrong!');
       }
-
       const data = await response.json();
 
       const loadedMovies = [];
-
       for (const key in data) {
         loadedMovies.push({
           id: key,
@@ -30,7 +27,6 @@ function App() {
           releaseDate: data[key].releaseDate,
         });
       }
-
       setMovies(loadedMovies);
     } catch (error) {
       setError(error.message);
@@ -54,16 +50,27 @@ function App() {
     console.log(data);
   }
 
-  let content = <p>Found no movies.</p>;
-
-  if (movies.length > 0) {
-    content = <MoviesList movies={movies} />;
+  async function deleteMovieHandler(id) {
+    try {
+      const response = await fetch(`https://movieapi-7d882-default-rtdb.firebaseio.com/movies/${id}.json`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Something went wrong while deleting.');
+      }
+      setMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== id));
+    } catch (error) {
+      console.error(error);
+    }
   }
 
+  let content = <p>Found no movies.</p>;
+  if (movies.length > 0) {
+    content = <MoviesList movies={movies} onDeleteMovie={deleteMovieHandler} />;
+  }
   if (error) {
     content = <p>{error}</p>;
   }
-
   if (isLoading) {
     content = <p>Loading...</p>;
   }
